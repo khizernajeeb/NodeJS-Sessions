@@ -1,16 +1,24 @@
-const http = require('http');
+const express = require('express');
+const app = express();
+const axios = require('axios');
 
-const PORT = 3000;
-const HOST = '127.0.0.1';
 
-const helloWorldRequest = (req, res) => {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.write("Welcome to NodeJS");
-    res.end();
-};
+async function allFilms() {
+    let response  = await axios.get('https://swapi.co/api/films').then(res => res.data.results);
+    let films = response.map(record => record.title + ' resleased on ' + record.release_date);
+    console.log(`Assignment 1: All Star Wars Films available to download\n${films.toString().split(",").join("\n")}`);
+}
 
-const server = http.createServer(helloWorldRequest);
+async function searchFilm(filmName) {
+    let response  = await axios.get('https://swapi.co/api/films').then(res => res.data.results);
+    let film = response.find(record => record.title == filmName);
+    console.log(`\nAssignment 2: ${film.title} is available to download`);
+}
 
-server.listen(PORT, HOST, () => {
-    console.log(`Server runnting at port ${PORT}`)
-});
+allFilms();
+searchFilm("The Phantom Menace");
+
+// listen server
+app.listen(4000, () => {
+    console.log("Server listen on port 4000")
+})
